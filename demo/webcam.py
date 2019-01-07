@@ -4,9 +4,11 @@ import cv2
 
 from maskrcnn_benchmark.config import cfg
 from predictor import COCODemo
+from naming import image_naming_according_to_index
 
 import time
 
+subdir = './output/'
 
 def main():
     parser = argparse.ArgumentParser(description="PyTorch Object Detection Webcam Demo")
@@ -65,12 +67,16 @@ def main():
     )
 
     cam = cv2.VideoCapture(0)
+    idx = 0
     while True:
         start_time = time.time()
         ret_val, img = cam.read()
+        idx += 1
         composite = coco_demo.run_on_opencv_image(img)
         print("Time: {:.2f} s / img".format(time.time() - start_time))
         cv2.imshow("COCO detections", composite)
+        fn = subdir + image_naming_according_to_index(idx, 10, '.jpg')
+        cv2.imwrite(fn, composite)
         if cv2.waitKey(1) == 27:
             break  # esc to quit
     cv2.destroyAllWindows()
